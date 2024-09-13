@@ -1,5 +1,6 @@
-import os
 import argparse
+import os
+import re
 
 
 def parse_arguments():
@@ -28,15 +29,34 @@ def lesa_skra(file_path):
     """
 
     with open(file_path, 'r') as file:
-        return file.readlines()
+        return [line.strip() for line in file.readlines()]
 
 
 def endurraða_skra(linur):
     """"
-    Hér á eftir að uppfæra doc-streng sem lýsir fallinu betur.
-    """
+    Tekur línur á formattinu Jón Jónsson, Litla-Saurbæ, 816 Ölfusi, 555-1234
+Guðrún Helgadóttir, Fiskislóð 15, 101 Reykjavík, 510-7000
+Jón Oddur Guðmundsson, Úthlíð 6, 450 Patreksfirði, 897-1234
+og skilar endurröðuðum línum á formattinu Litla-Saurbæ	816 Ölfusi	555-1234	Jónsson, Jón
+Fiskislóð 15	101 Reykjavík	510-7000	Helgadóttir, Guðrún
+Úthlíð 6	450 Patreksfirði	897-1234	Guðmundsson, Jón Oddur. Þannig Orðunum er enduraðað
+Kommur fara út nema á milli eftirnafns og fornafns og bil myndast.
 
-    raise NotImplementedError("Regluleg segð til að endurraða línur hefur ekki verið útfærð.")
+
+
+    substitution = r'\3\t\4\t\5\t\2\t\1'
+
+    """
+    result = []
+    pattern = r'([^,]+)\s([^,]+),\s([^,]+),\s([^,]+),\s(.+)'  # reges pattern notað til að bera kennsl á og hópa saman miðað við formattið
+    substitution = r'\3\t\4\t\5\t\2, \1'  # Skiptimunstrið skilgreint til þess að enduraða orðunum, kommum skipt út fyrir bil
+
+    for lina in linur:  # ítra yfir hverja línu i input listanum
+        if re.match(pattern, lina):  # athuga hvort línurnar passi við regex patternið
+            newline = re.sub(pattern, substitution, lina)  # enduraða línunum eftir substitution-inu
+            result.append(newline)  # bæta enduraðaðri línunni við útkomu listann
+
+    return result
 
 
 def skrifa_nidurstodur(output_file, linur):
@@ -46,9 +66,9 @@ def skrifa_nidurstodur(output_file, linur):
     :param linur:       (list) Listi af línum
     :return:            None
     """
+
     with open(output_file, 'w') as file:
-        for lina in linur:
-            file.write(lina + '\n')
+        file.write('\n'.join(linur))
 
 
 def main():
@@ -81,5 +101,5 @@ def main():
     skrifa_nidurstodur(args.outfile, linur)
 
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     main()

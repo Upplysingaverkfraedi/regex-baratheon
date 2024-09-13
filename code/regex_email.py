@@ -33,6 +33,15 @@ def finna_netfong(text):
     :return:     (list) Listi af netföngum
     """
 
+    # Regluleg segð fyrir lögleg netföng.
+    email_regex = r'\b[A-Za-z0-9.]+@(?!.*\.\.)[A-Za-z0-9.-]+\.[A-Za-z]{2,3}\b'
+
+    # Sameina allar línur í einn texta
+    full_text = "".join(text)
+
+    # Finna öll netföng í textanum
+    return re.findall(email_regex, full_text)
+
     raise NotImplementedError("Regluleg segð til að finna netföng hefur ekki verið útfærð.")
 
 

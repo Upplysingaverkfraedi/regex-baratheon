@@ -1,5 +1,5 @@
 import argparse
-
+import re
 
 def parse_arguments():
     """
@@ -53,14 +53,31 @@ def finna_kennitolur(text, leit_af_einstaklingum, leit_af_fyrirtaekjum):
     """
 
     kennitolur = []
-
+    # skilgreina reglulega segð fyrir einstaklinga 
+    mynstur_einstaklingar = r'\b(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])(\d{2})-([2-9][0-9])(\d{1})([890])\b'
+    # Skilgreina reglulega segð fyrir fyrirtæki 
+    mynstur_fyrirtaeki = r'\b[4-9]\d{5}-\d{4}\b'
+    
     if leit_af_einstaklingum:
-        # Regluleg segð fyrir kennitölur einstaklinga
-        raise NotImplementedError("Fall sem leitar að kt einstaklinga hefur enn ekki verið útfært.")
+        for lina in text:
+            # Finn allar kennitölur einstaklinga í línunni
+            for kt in re.findall(mynstur_einstaklingar, lina):
+                #skipti hópunum niður til þess að prenta þá alla saman
+                dagur = kt[0]
+                manudur = kt[1]
+                ar = kt[2]
+                fyrsti_hluti = kt[3]
+                mid_hluti = kt[4]
+                lokastafur = kt[5]
+                
+                # Sameina hópana til að fá kennitölu á forminu ddmmáá-xxxx
+                kennitala = f"{dagur}{manudur}{ar}-{fyrsti_hluti}{mid_hluti}{lokastafur}"
+                kennitolur.append(kennitala)
 
     if leit_af_fyrirtaekjum:
-        # Regluleg segð fyrir kennitölur fyrirtækja
-        raise NotImplementedError("Fall sem leitar að kt fyrirtækja hefur enn ekki verið útfært.")
+        for lina in text:
+            # Finn allar kennitölur fyrirtækja í línunni og bæti þeim við listann
+            kennitolur.extend(re.findall(mynstur_fyrirtaeki, lina))
 
     return kennitolur
 
